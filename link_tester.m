@@ -1,3 +1,12 @@
+%% Description
+
+% This is a script that will attempt to find the "optimal" configuration of
+% a four-bar linkage system, in terms of the 2D coordinates of each pivot
+% joint, given certain boundary conditions and optimization criteria. In
+% the current implementation, the script is based on the allowable geometry
+% of a prototype prosthetic ankle joint, and is optimizing according to
+% forces observed on the driver link.
+
 %% Blank Workspace
 
 clear
@@ -5,6 +14,9 @@ close
 clc
 
 %% Initialize Options
+
+% These settings currently coorespond to the given ankle geometry of 65 x
+% 50 mm in the sagital plane.
 
 link_length = 17.78:2.54:30.48;
 
@@ -15,6 +27,9 @@ angle = 0:10:350;
 
 %% Create Cost Array
 
+% This array will store the important characteristics of the five best
+% designs.
+
 configs = {ones(2,1), ones(2,1), ones(2,1), ones(2,1), 0, strings, ones(2,1), ones(2,1), ones(2,1), ones(2,1);
     ones(2,1), ones(2,1), ones(2,1), ones(2,1), 0, strings, ones(2,1), ones(2,1), ones(2,1), ones(2,1);
     ones(2,1), ones(2,1), ones(2,1), ones(2,1), 0, strings, ones(2,1), ones(2,1), ones(2,1), ones(2,1);
@@ -23,6 +38,19 @@ configs = {ones(2,1), ones(2,1), ones(2,1), ones(2,1), 0, strings, ones(2,1), on
 
 %% Loop Through Possibilites
 
+% Each of these nested loops simulates a change in a separate parameter.
+% They are as follows, from outermost loop to innermost:
+% g: length of the leftmost link
+% h: length of the rightmost link
+% k: X position of the leftmost pivot joint
+% m: Y position of the leftmost pivot joint
+% p: X position of the rightmost pivot joint
+% q: Y position of the rightmost pivot joint
+% r: Angle of the leftmost link in the starting (dorsiflexed)
+% configuration, in cartesian convention
+% s: Angle of the rightmost link in the starting (dorsiflexed)
+% configuration, in cartesian convention
+
 for g = 1:length(link_length)
     for h = 1:length(link_length)
         for k = 1:length(ground_pos_x)
@@ -30,7 +58,7 @@ for g = 1:length(link_length)
                 for p = 1:length(ground_pos_x)
                     for q = 1:length(ground_pos_y)
                         
-                        break_flag = 0;
+                        break_flag = 0; %If certain conditions are met, the other angles of a config do not need to be tested
                         
                         for r = 1:length(angle)
                             for s = 1:length(angle)
